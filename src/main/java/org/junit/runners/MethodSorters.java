@@ -27,7 +27,9 @@ public enum MethodSorters {
     /**
      * Sorts the test methods in a deterministic, but not predictable, order
      */
-    DEFAULT(MethodSorter.DEFAULT);
+    DEFAULT(MethodSorter.DEFAULT),
+
+    ORDERED(MethodSorter.ORDERED);
 
     private final Comparator<Method> comparator;
 

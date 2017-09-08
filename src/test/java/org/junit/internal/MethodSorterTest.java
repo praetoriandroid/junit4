@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.FixMethodOrder;
+import org.junit.Order;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -178,5 +179,74 @@ public class MethodSorterTest {
         List<String> expected = Arrays.asList(ALPHA, BETA, DELTA, EPSILON, GAMMA_VOID, GAMMA_BOOLEAN);
         List<String> actual = getDeclaredMethodNames(DummySortWithNameAsc.class);
         assertEquals(expected, actual);
+    }
+
+    @FixMethodOrder(MethodSorters.ORDERED)
+    static class DummySortWithGivenOrder {
+        @Order(1)
+        Object alpha(int i, double d, Thread t) {
+            return null;
+        }
+
+        @Order(Integer.MAX_VALUE)
+        void beta(int[][] x) {
+        }
+
+        @Order(Integer.MIN_VALUE)
+        int gamma() {
+            return 0;
+        }
+
+        @Order(2)
+        void gamma(boolean b) {
+        }
+
+        @Order(3)
+        void delta() {
+        }
+
+        @Order(0)
+        void epsilon() {
+        }
+    }
+
+    @Test
+    public void testGivenOrderMethodSorter() {
+        List<String> expected = Arrays.asList(GAMMA_VOID, EPSILON, ALPHA, GAMMA_BOOLEAN, DELTA, BETA);
+        List<String> actual = getDeclaredMethodNames(DummySortWithGivenOrder.class);
+        assertEquals(expected, actual);
+    }
+
+    @FixMethodOrder(MethodSorters.ORDERED)
+    static class DummySortWithMissingOrder {
+        Object alpha(int i, double d, Thread t) {
+            return null;
+        }
+
+        @Order
+        void beta(int[][] x) {
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMissingOrderMethodSorter() {
+        getDeclaredMethodNames(DummySortWithMissingOrder.class);
+    }
+
+    @FixMethodOrder(MethodSorters.ORDERED)
+    static class DummySortWithIllegalOrder {
+        @Order
+        Object alpha(int i, double d, Thread t) {
+            return null;
+        }
+
+        @Order
+        void beta(int[][] x) {
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalOrderMethodSorter() {
+        getDeclaredMethodNames(DummySortWithIllegalOrder.class);
     }
 }
