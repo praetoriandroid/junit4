@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.junit.FixMethodOrder;
+import org.junit.Order;
 
 public class MethodSorter {
     /**
@@ -31,6 +32,28 @@ public class MethodSorter {
                 return comparison;
             }
             return m1.toString().compareTo(m2.toString());
+        }
+    };
+
+    /**
+     * Sort order that takes into the account an @Order annotation
+     */
+    public static final Comparator<Method> ORDERED = new Comparator<Method>() {
+        public int compare(Method m1, Method m2) {
+            if (m1.equals(m2)) {
+                return 0;
+            }
+            Order a1 = m1.getAnnotation(Order.class);
+            Order a2 = m2.getAnnotation(Order.class);
+            if (a1 == null || a2 == null) {
+                throw new IllegalArgumentException("When using the ORDERED sorter you need to annotate all tests with @Order");
+            }
+            int p1 = a1.value();
+            int p2 = a2.value();
+            if (p1 == p2) {
+                throw new IllegalArgumentException("When using the @Order you need to provide the unique order numbers for all tests");
+            }
+            return p1 < p2 ? -1 : 1;
         }
     };
 
